@@ -11,6 +11,7 @@ import org.john.edu.models.FlashCard;
 import org.john.edu.services.FlashCardService;
 
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Objects;
 
@@ -33,11 +34,10 @@ public class FlashCardController {
         event.deferReply(true).queue(hook -> {
             try {
                 var flashCards = flashCardService.generateFlashcards(attachment.getUrl());
-                var embeds = new MessageEmbed[flashCards.size()];
-                for (int i = 0; i < flashCards.size(); i++)
-                    embeds[i] = createFlashcardEmbed(flashCards.get(i));
+                var embeds = new ArrayList<MessageEmbed>();
+                for (FlashCard flashCard : flashCards) embeds.add(createFlashcardEmbed(flashCard));
 
-                hook.sendMessageEmbeds(embeds[0], Arrays.copyOfRange(embeds, 1, embeds.length)).queue();
+                hook.sendMessageEmbeds(embeds).queue();
             } catch (Exception e) {
                 hook.sendMessage("An error occurred while processing your request.").queue();
                 FlashCardController.log.error("An error occurred while processing the request.", e);
